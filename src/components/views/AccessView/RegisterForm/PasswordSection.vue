@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 
 import { EyeSlashIcon, EyeIcon } from "@heroicons/vue/24/outline";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
@@ -8,6 +8,14 @@ import Button from "@src/components/ui/inputs/Button.vue";
 
 const showPassword = ref(false);
 const showPasswordConfirm = ref(false);
+const password = ref('');
+const confirmPassword = ref('');
+const emit = defineEmits(['passwordSectionFilled']);
+
+const handlePasswordSection = () => {
+    emit('passwordSectionFilled', password.value);
+}
+
 </script>
 
 <template>
@@ -19,6 +27,7 @@ const showPasswordConfirm = ref(false);
         placeholder="Enter your password"
         :type="showPassword ? 'text' : 'password'"
         class="pr-[2.5rem] mb-5"
+        @valueChanged="value => password = value"
       >
         <template v-slot:endAdornment>
           <IconButton
@@ -43,6 +52,7 @@ const showPasswordConfirm = ref(false);
         label="Confirm Password"
         placeholder="Enter your password"
         :type="showPasswordConfirm ? 'text' : 'password'"
+        @valueChanged="value => confirmPassword = value"
       >
         <template v-slot:endAdornment>
           <IconButton
@@ -66,7 +76,8 @@ const showPasswordConfirm = ref(false);
 
     <!--controls-->
     <div class="mb-5">
-      <Button class="w-full mb-4">Sign up</Button>
+      <Button class="w-full mb-4" @click="handlePasswordSection">Sign up</Button>
+
       <Button
         variant="outlined"
         class="w-full"

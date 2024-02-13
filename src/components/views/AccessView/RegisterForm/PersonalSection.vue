@@ -2,22 +2,43 @@
 import Button from "@src/components/ui/inputs/Button.vue";
 import TextInput from "@src/components/ui/inputs/TextInput.vue";
 import Typography from "@src/components/ui/data-display/Typography.vue";
+import { reactive, defineEmits } from 'vue';
+
+const emit = defineEmits(['personalSectionFilled']);
+
+const formData = reactive({
+    email: '',
+    firstName: '',
+    lastName: ''
+});
+
+const handlePersonalSectionForm = () => {
+    emit('personalSectionFilled', formData);
+}
+
 </script>
 
 <template>
   <div>
     <!--form-->
     <div class="mb-5">
-      <TextInput label="Email" placeholder="Enter your email" class="mb-5" />
+      <TextInput
+        label="Email"
+        placeholder="Enter your email"
+        class="mb-5"
+        @valueChanged="value => formData.email = value"
+      />
       <TextInput
         label="First Name"
         placeholder="Enter your first name"
         class="mb-5"
+        @valueChanged="value => formData.firstName = value"
       />
       <TextInput
         label="Last Name"
         placeholder="Enter your last name"
         class="mb-5"
+        @valueChanged="value => formData.lastName = value"
       />
     </div>
 
@@ -29,7 +50,8 @@ import Typography from "@src/components/ui/data-display/Typography.vue";
           $emit('active-section-change', {
             sectionName: 'password-section',
             animationName: 'slide-left',
-          })
+          });
+          handlePersonalSectionForm();
         "
         >Next</Button
       >

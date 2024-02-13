@@ -7,7 +7,7 @@ import Typography from "@src/components/ui/data-display/Typography.vue";
 import PasswordSection from "@src/components/views/AccessView/RegisterForm/PasswordSection.vue";
 import PersonalSection from "@src/components/views/AccessView/RegisterForm/PersonalSection.vue";
 
-defineEmits(["activeSectionChange"]);
+const emit = defineEmits(["activeSectionChange, personalSectionFilled, passwordSectionFilled"]);
 
 // determines what form section to use.
 const activeSectionName = ref("personal-section");
@@ -57,6 +57,8 @@ const changeActiveSection = (event: {
       <SlideTransition :animation="animation">
         <component
           @active-section-change="changeActiveSection"
+          @personalSectionFilled="(payLoad) => emit('personalSectionFilled', payLoad)"
+          @passwordSectionFilled="(payload) => emit('passwordSectionFilled', payload)"
           :is="ActiveSection"
         />
       </SlideTransition>
