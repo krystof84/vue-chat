@@ -5,16 +5,23 @@ import { EyeSlashIcon, EyeIcon } from "@heroicons/vue/24/outline";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import TextInput from "@src/components/ui/inputs/TextInput.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
+import Alert from "@src/components/ui/utils/Alert.vue";
 
 const showPassword = ref(false);
 const showPasswordConfirm = ref(false);
 const password = ref('');
 const confirmPassword = ref('');
+const passwordError = ref(false);
 const emit = defineEmits(['passwordSectionFilled']);
 
 const handlePasswordSection = () => {
-    emit('passwordSectionFilled', password.value);
-}
+    if(password.value !== confirmPassword.value) {
+        passwordError.value = true;
+    } else {
+        passwordError.value = false;
+        emit('passwordSectionFilled', password.value);
+    }
+};
 
 </script>
 
@@ -26,6 +33,7 @@ const handlePasswordSection = () => {
         label="Password"
         placeholder="Enter your password"
         :type="showPassword ? 'text' : 'password'"
+        :value="password.length ? password : ''"
         class="pr-[2.5rem] mb-5"
         @valueChanged="value => password = value"
       >
@@ -52,6 +60,7 @@ const handlePasswordSection = () => {
         label="Confirm Password"
         placeholder="Enter your password"
         :type="showPasswordConfirm ? 'text' : 'password'"
+        :value="confirmPassword.length ? confirmPassword : ''"
         @valueChanged="value => confirmPassword = value"
       >
         <template v-slot:endAdornment>
@@ -72,6 +81,7 @@ const handlePasswordSection = () => {
           </IconButton>
         </template>
       </TextInput>
+        <Alert v-if="passwordError">Passwords must be identical</Alert>
     </div>
 
     <!--controls-->
