@@ -2,9 +2,13 @@
 import Button from "@src/components/ui/inputs/Button.vue";
 import TextInput from "@src/components/ui/inputs/TextInput.vue";
 import Typography from "@src/components/ui/data-display/Typography.vue";
-import { reactive, defineEmits } from 'vue';
+import { reactive, defineEmits, computed } from 'vue';
+import useStore from "@src/store/store";
+import { storeToRefs } from 'pinia';
 
 const emit = defineEmits(['personalSectionFilled']);
+const store = useStore();
+const { errors } = storeToRefs(store);
 
 const formData = reactive({
     email: '',
@@ -12,8 +16,35 @@ const formData = reactive({
     lastName: ''
 });
 
+const isValidEmail = () => {
+    return /^[^@]+@\w+(\.\w+)+\w$/.test(formData['email']);
+};
+
 const handlePersonalSectionForm = () => {
+    store.clearErrors();
+
+    // Check if input fields are not empty
+    for(let key in formData) {
+        if(formData[key].length === 0) {
+            store.addError('Fields must not be empty');
+        }
+    }
+
+    if(!isValidEmail()) {
+        store.addError('Incorrect email address');
+    }
+
+    if( errors.value.length ) {
+        return false;
+    }
+
+    store.clearErrors();
     emit('personalSectionFilled', formData);
+
+    emit('active-section-change', {
+        sectionName: 'password-section',
+        animationName: 'slide-left',
+    });
 }
 
 </script>
@@ -46,15 +77,8 @@ const handlePersonalSectionForm = () => {
     <div class="mb-6">
       <Button
         class="w-full mb-4"
-        @click="
-          $emit('active-section-change', {
-            sectionName: 'password-section',
-            animationName: 'slide-left',
-          });
-          handlePersonalSectionForm();
-        "
-        >Next</Button
-      >
+        @click="handlePersonalSectionForm"
+        >Next</Button>
     </div>
 
     <!--divider-->

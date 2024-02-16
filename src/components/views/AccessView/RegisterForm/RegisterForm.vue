@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { RouterLink } from "vue-router";
+import useStore from "@src/store/store";
+import { storeToRefs } from 'pinia'
 
 import SlideTransition from "@src/components/ui/transitions/SlideTransition.vue";
 import Typography from "@src/components/ui/data-display/Typography.vue";
 import PasswordSection from "@src/components/views/AccessView/RegisterForm/PasswordSection.vue";
 import PersonalSection from "@src/components/views/AccessView/RegisterForm/PersonalSection.vue";
+import Alert from "@src/components/ui/utils/Alert.vue";
 
 const emit = defineEmits(["activeSectionChange, personalSectionFilled, passwordSectionFilled"]);
+
+const store = useStore();
+const { errors } = storeToRefs(store);
 
 // determines what form section to use.
 const activeSectionName = ref("personal-section");
@@ -39,6 +45,10 @@ const changeActiveSection = (event: {
     class="p-5 md:basis-1/2 xs:basis-full flex flex-col justify-center items-center"
   >
     <div class="w-full md:px-[26%] xs:px-[10%]">
+        <Alert v-for="error in errors" :key="error" class="mb-4">
+            {{ error }}
+        </Alert>
+
       <!--header-->
       <div class="mb-6 flex flex-col">
         <img

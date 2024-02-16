@@ -5,20 +5,30 @@ import { EyeSlashIcon, EyeIcon } from "@heroicons/vue/24/outline";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import TextInput from "@src/components/ui/inputs/TextInput.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
-import Alert from "@src/components/ui/utils/Alert.vue";
+import useStore from "@src/store/store";
+import { storeToRefs } from 'pinia';
 
+const store = useStore();
 const showPassword = ref(false);
 const showPasswordConfirm = ref(false);
 const password = ref('');
 const confirmPassword = ref('');
-const passwordError = ref(false);
+const { errors } = storeToRefs(store);
+
 const emit = defineEmits(['passwordSectionFilled']);
 
 const handlePasswordSection = () => {
+    store.clearErrors();
+
+    if(password.value.length === 0 || confirmPassword.value.length === 0) {
+        store.addError('Fields must not be empty');
+    }
+
     if(password.value !== confirmPassword.value) {
-        passwordError.value = true;
-    } else {
-        passwordError.value = false;
+        store.addError('Password must be identical');
+    }
+
+    if(errors.value.length === 0) {
         emit('passwordSectionFilled', password.value);
     }
 };
@@ -81,7 +91,6 @@ const handlePasswordSection = () => {
           </IconButton>
         </template>
       </TextInput>
-        <Alert v-if="passwordError">Passwords must be identical</Alert>
     </div>
 
     <!--controls-->

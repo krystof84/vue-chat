@@ -48,6 +48,20 @@ const useStore = defineStore("chat", () => {
   const callMinimized = ref(false);
   const openVoiceCall = ref(false);
 
+  // errors
+  const errors = ref([]);
+  const addError = (error) => {
+      if( !errors.value.includes(error) ) {
+          errors.value.push(error);
+      }
+  };
+  const removeError = (error) => {
+      errors.value = errors.value.filter( err => err !== error );
+  };
+  const clearErrors = () => {
+    errors.value = [];
+  };
+
   // contacts grouped alphabetically.
   const contactGroups: Ref<IContactGroup[] | undefined> = computed(() => {
     if (user.value) {
@@ -101,6 +115,12 @@ const useStore = defineStore("chat", () => {
     activeCall,
     recentEmoji,
     emojiSkinTone,
+
+    // errors
+    errors,
+    addError,
+    removeError,
+    clearErrors,
 
     // ui refs
     activeSidebarComponent,

@@ -3,12 +3,14 @@ import { useRoute, useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import { getDatabase, set, ref as ref_database} from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import useStore from "@src/store/store";
 
 import LoginForm from "@src/components/views/AccessView/LoginForm.vue";
 import RegisterForm from "@src/components/views/AccessView/RegisterForm/RegisterForm.vue";
 import Cover from "@src/components/views/AccessView/Cover.vue";
 import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
 
+const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const newUser = ref({
@@ -41,7 +43,12 @@ const handlePasswordSection = (password) => {
             router.push('/');
         })
         .catch(error => {
-            console.log(error.message);
+            if( error.message === 'Firebase: Error (auth/email-already-in-use).' ) {
+                store.addError('Account with this email already exists');
+            } else {
+                store.addError('Oops, something went wrong');
+                console.log(error);
+            }
         }
     );
 };
