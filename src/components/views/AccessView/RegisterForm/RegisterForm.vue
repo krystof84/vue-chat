@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import useStore from "@src/store/store";
 import { storeToRefs } from 'pinia'
@@ -10,7 +10,7 @@ import PasswordSection from "@src/components/views/AccessView/RegisterForm/Passw
 import PersonalSection from "@src/components/views/AccessView/RegisterForm/PersonalSection.vue";
 import Alert from "@src/components/ui/utils/Alert.vue";
 
-const emit = defineEmits(["activeSectionChange, personalSectionFilled, passwordSectionFilled"]);
+const emit = defineEmits(["activeSectionChange, personalSectionFilled, passwordSectionFilled, signWithGoogleButtonClicked"]);
 
 const store = useStore();
 const { errors } = storeToRefs(store);
@@ -20,6 +20,10 @@ const activeSectionName = ref("personal-section");
 
 // determines what direction the slide animation should use.
 const animation = ref("slide-left");
+
+onMounted(() => {
+    store.clearErrors();
+});
 
 // get the active section component from the section name
 const ActiveSection = computed((): any => {
@@ -69,6 +73,7 @@ const changeActiveSection = (event: {
           @active-section-change="changeActiveSection"
           @personalSectionFilled="(payLoad) => emit('personalSectionFilled', payLoad)"
           @passwordSectionFilled="(payload) => emit('passwordSectionFilled', payload)"
+          @signWithGoogleButtonClicked="(payload) => emit('signWithGoogleButtonClicked', payload)"
           :is="ActiveSection"
         />
       </SlideTransition>

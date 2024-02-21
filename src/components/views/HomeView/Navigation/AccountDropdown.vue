@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import useStore from "@src/store/store";
+import Typography from "@src/components/ui/data-display/Typography.vue";
+import { getAuth, signOut } from "firebase/auth";
+import { useRouter } from "vue-router";
 
 import {
   ArrowLeftOnRectangleIcon,
@@ -18,6 +21,7 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
+const router = useRouter();
 
 // (event) close dropdown menu when clicking outside
 const handleCloseOnClickOutside = (event: Event) => {
@@ -29,6 +33,17 @@ const handleCloseOnClickOutside = (event: Event) => {
     props.handleCloseDropdown();
   }
 };
+
+const logout = () => {
+    const auth = getAuth();
+
+    signOut(auth).then(() => {
+        console.log('Sign-out successful');
+        router.push('/access/sign-in/');
+    }).catch((error) => {
+        // An error happened.
+    });
+}
 </script>
 
 <template>
@@ -97,13 +112,13 @@ const handleCloseOnClickOutside = (event: Event) => {
         :handle-click="props.handleCloseDropdown"
         color="danger"
       >
-        <RouterLink
-          to="/access/sign-in/"
+        <Typography
           class="w-full flex items-center justify-start"
+          @click="logout"
         >
           <ArrowLeftOnRectangleIcon class="h-5 w-5 mr-3" />
           Logout
-        </RouterLink>
+        </Typography>
       </DropdownLink>
     </Dropdown>
   </div>

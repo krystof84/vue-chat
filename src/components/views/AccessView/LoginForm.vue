@@ -1,14 +1,52 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, reactive, onMounted } from "vue";
 
 import Typography from "@src/components/ui/data-display/Typography.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import TextInput from "@src/components/ui/inputs/TextInput.vue";
+import Alert from "@src/components/ui/utils/Alert.vue";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/vue/24/outline";
 import { RouterLink } from "vue-router";
+import { storeToRefs } from 'pinia';
+import useStore from "@src/store/store";
+import { isValidEmail } from "@src/hooks/utils.ts";
 
+const emit = defineEmits(['signWithGoogleButtonClicked', 'signWithEmailAndPassword']);
+
+const store = useStore();
 const showPassword = ref(false);
+const { errors } = storeToRefs(store);
+const formData = reactive({
+    email: '',
+    password: ''
+});
+
+onMounted(() => {
+   store.clearErrors();
+});
+
+const handleSignIn = () => {
+    store.clearErrors();
+
+    for(let key in formData) {
+        if(formData[key].length === 0) {
+            store.addError('Fields must not be empty');
+        }
+    }
+
+    if( !isValidEmail(formData.email) ) {
+        store.addError('Incorrect email address');
+    }
+
+    if( errors.value.length ) {
+        return false;
+    }
+
+    // emit to parent
+    emit('signWithEmailAndPassword', formData);
+}
+
 </script>
 
 <template>
@@ -16,6 +54,10 @@ const showPassword = ref(false);
     class="p-5 md:basis-1/2 xs:basis-full flex flex-col justify-center items-center"
   >
     <div class="w-full md:px-[26%] xs:px-[10%]">
+        <Alert v-for="error in errors" :key="error" class="mb-4">
+            {{ error }}
+        </Alert>
+
       <!--header-->
       <div class="mb-6 flex flex-col">
         <img
@@ -31,12 +73,18 @@ const showPassword = ref(false);
 
       <!--form-->
       <div class="mb-6">
-        <TextInput label="Email" placeholder="Enter your email" class="mb-5" />
+        <TextInput
+            label="Email"
+            placeholder="Enter your email"
+            class="mb-5"
+            @valueChanged="value => formData.email = value"
+        />
         <TextInput
           label="Password"
           placeholder="Enter your password"
           :type="showPassword ? 'text' : 'password'"
           class="pr-[2.5rem]"
+          @valueChanged="value => formData.password = value"
         >
           <template v-slot:endAdornment>
             <IconButton
@@ -60,7 +108,7 @@ const showPassword = ref(false);
 
       <!--local controls-->
       <div class="mb-6">
-        <Button class="w-full mb-4" link to="/">Sign in</Button>
+        <Button class="w-full mb-4" @click="handleSignIn">Sign in</Button>
       </div>
 
       <!--divider-->
@@ -78,7 +126,7 @@ const showPassword = ref(false);
 
       <!--oauth controls-->
       <div>
-        <Button variant="outlined" class="w-full mb-5">
+        <Button variant="outlined" class="w-full mb-5" @click="emit('signWithGoogleButtonClicked')">
           <span class="flex">
             <img
               src="@src/assets/vectors/google-logo.svg"

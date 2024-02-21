@@ -2,11 +2,12 @@
 import Button from "@src/components/ui/inputs/Button.vue";
 import TextInput from "@src/components/ui/inputs/TextInput.vue";
 import Typography from "@src/components/ui/data-display/Typography.vue";
+import { isValidEmail } from "@src/hooks/utils.ts";
 import { reactive, defineEmits, computed } from 'vue';
 import useStore from "@src/store/store";
 import { storeToRefs } from 'pinia';
 
-const emit = defineEmits(['personalSectionFilled']);
+const emit = defineEmits(['personalSectionFilled', 'signWithGoogleButtonClicked']);
 const store = useStore();
 const { errors } = storeToRefs(store);
 
@@ -15,10 +16,6 @@ const formData = reactive({
     firstName: '',
     lastName: ''
 });
-
-const isValidEmail = () => {
-    return /^[^@]+@\w+(\.\w+)+\w$/.test(formData['email']);
-};
 
 const handlePersonalSectionForm = () => {
     store.clearErrors();
@@ -30,7 +27,7 @@ const handlePersonalSectionForm = () => {
         }
     }
 
-    if(!isValidEmail()) {
+    if(!isValidEmail(formData.email)) {
         store.addError('Incorrect email address');
     }
 
@@ -95,7 +92,11 @@ const handlePersonalSectionForm = () => {
     </div>
 
     <!--oauth controls-->
-    <Button variant="outlined" class="w-full mb-5">
+    <Button
+        variant="outlined"
+        class="w-full mb-5"
+        @click="emit('signWithGoogleButtonClicked', true)"
+    >
       <span class="flex">
         <img
           src="@src/assets/vectors/google-logo.svg"
