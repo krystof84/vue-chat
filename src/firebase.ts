@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signOut, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, set, ref as ref_database} from "firebase/database";
 import router from "@src/router.ts";
 import useStore from "@src/store/store";
@@ -100,14 +100,15 @@ export const handleSignWithEmailAndPassword = (payload) => {
         });
 };
 
-export const isUserSignedIn = (): boolean => {
-
+export const getCurrentUser = () => {
     const auth = getAuth();
 
-    console.log(auth.currentUser !== null);
-    console.log(auth.currentUser);
-
-    return auth.currentUser !== null;
+    return new Promise((resolve, reject) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe();
+            resolve(user);
+        }, reject);
+    });
 };
 
 export const signOutUser = () => {
