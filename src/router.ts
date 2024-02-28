@@ -32,11 +32,18 @@ const router = createRouter({
 });
 
 router.beforeEach(async(to) => {
+    const currentUser = await getCurrentUser();
+
     if(to.matched.some(record => record.meta.requiresAuth)) {
-        const currentUser = await getCurrentUser();
 
         if(!currentUser) {
             return '/access/sign-in/';
+        }
+    }
+
+    if(to.name === 'Access') {
+        if(currentUser) {
+            return "/";
         }
     }
 });
